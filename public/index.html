@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnBank - Personal Banking</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #2d3436; }
+        .navbar { background: #fff; border-bottom: 2px solid #e8e8e8; padding: 15px 60px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { font-size: 26px; font-weight: 700; color: #1a73e8; text-decoration: none; }
+        .nav-brand span { color: #34a853; }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: #555; text-decoration: none; font-weight: 500; font-size: 15px; transition: color 0.2s; }
+        .nav-links a:hover { color: #1a73e8; }
+        .btn-login { background: #1a73e8; color: #fff !important; padding: 10px 28px; border-radius: 6px; font-weight: 600 !important; text-decoration: none; }
+        .btn-login:hover { background: #1557b0; color: #fff !important; }
+        .hero { background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%); padding: 80px 20px; text-align: center; color: #fff; }
+        .hero h1 { font-size: 48px; font-weight: 700; margin-bottom: 15px; }
+        .hero p { font-size: 20px; opacity: 0.9; max-width: 600px; margin: 0 auto 30px; }
+        .hero-buttons { display: flex; gap: 15px; justify-content: center; }
+        .btn-white { background: #fff; color: #1a73e8; padding: 14px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 16px; transition: all 0.2s; }
+        .btn-white:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .btn-outline-white { background: transparent; color: #fff; padding: 14px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 16px; border: 2px solid #fff; transition: all 0.2s; }
+        .btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+        .section { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
+        .section h2 { text-align: center; font-size: 32px; color: #1a73e8; margin-bottom: 40px; }
+        .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .feature-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 30px; transition: all 0.2s; }
+        .feature-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .feature-icon { width: 50px; height: 50px; background: #e8f0fe; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px; }
+        .feature-card h3 { font-size: 18px; color: #1a73e8; margin-bottom: 10px; }
+        .feature-card p { color: #666; font-size: 14px; line-height: 1.6; }
+        .stats { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 40px; display: flex; justify-content: space-around; text-align: center; margin-top: 40px; }
+        .stat h3 { font-size: 36px; color: #1a73e8; font-weight: 700; }
+        .stat p { color: #888; font-size: 14px; margin-top: 5px; }
+        .footer { background: #1a1a2e; color: #888; text-align: center; padding: 30px; font-size: 13px; margin-top: 60px; }
+        .footer a { color: #1a73e8; text-decoration: none; }
+        @media (max-width: 768px) { .features { grid-template-columns: 1fr; } .navbar { padding: 15px 20px; } .hero h1 { font-size: 32px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">Vuln<span>Bank</span></a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/learn">Learn More</a>
+            <a href="/support">Support</a>
+            <a href="/login" class="btn-login">Sign In</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Banking That Works For You</h1>
+        <p>Simple, secure, and smart personal banking with no hidden fees. Join over 2 million customers.</p>
+        <div class="hero-buttons">
+            <a href="/login" class="btn-white">Sign In</a>
+            <a href="/learn" class="btn-outline-white">Learn More</a>
+        </div>
+    </section>
+
+    <div class="section">
+        <h2>Why Choose VulnBank</h2>
+        <div class="features">
+            <div class="feature-card"><div class="feature-icon">🔒</div><h3>Bank-Grade Security</h3><p>256-bit encryption and multi-factor authentication keep your account protected 24/7.</p></div>
+            <div class="feature-card"><div class="feature-icon">⚡</div><h3>Instant Transfers</h3><p>Send and receive money in seconds. No waiting, no delays, no fees.</p></div>
+            <div class="feature-card"><div class="feature-icon">📊</div><h3>Smart Insights</h3><p>Track your spending habits with detailed analytics and budgeting tools.</p></div>
+            <div class="feature-card"><div class="feature-icon">📱</div><h3>Mobile Banking</h3><p>Full banking experience optimized for your smartphone and tablet.</p></div>
+            <div class="feature-card"><div class="feature-icon">🌍</div><h3>Global Access</h3><p>Access your money from anywhere in the world with no foreign transaction fees.</p></div>
+            <div class="feature-card"><div class="feature-icon">💬</div><h3>24/7 Support</h3><p>Our dedicated support team is always ready to help you with any questions.</p></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="stats">
+            <div class="stat"><h3>2M+</h3><p>Active Customers</p></div>
+            <div class="stat"><h3>$50B+</h3><p>Transactions Processed</p></div>
+            <div class="stat"><h3>99.9%</h3><p>Uptime Guarantee</p></div>
+            <div class="stat"><h3>150+</h3><p>Countries Supported</p></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 VulnBank. All rights reserved. Member FDIC. <a href="/support">Contact Us</a></p>
+    </div>
+</body>
+</html>

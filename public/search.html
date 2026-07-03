@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnBank - Find Users</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #333; min-height: 100vh; display: flex; }
+        .sidebar { width: 240px; background: #fff; border-right: 1px solid #e8e8e8; padding: 25px 0; min-height: 100vh; position: fixed; left: 0; top: 0; }
+        .sidebar-logo { padding: 0 25px 25px; font-size: 22px; font-weight: 700; color: #1a73e8; border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; }
+        .sidebar-logo span { color: #34a853; }
+        .sidebar a { display: block; padding: 12px 25px; color: #555; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+        .sidebar a:hover, .sidebar a.active { color: #1a73e8; background: #e8f0fe; border-right: 3px solid #1a73e8; }
+        .main { margin-left: 240px; flex: 1; padding: 30px 40px; }
+        .header { margin-bottom: 30px; }
+        .header h1 { font-size: 24px; color: #1a73e8; }
+        .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 30px; margin-bottom: 20px; }
+        .card h3 { color: #1a73e8; font-size: 16px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: 500; font-size: 13px; }
+        .form-group input { width: 100%; padding: 12px; background: #f8f9fb; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; color: #333; }
+        .form-group input:focus { outline: none; border-color: #1a73e8; background: #fff; }
+        .btn { padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: #1a73e8; color: #fff; width: 100%; }
+        .btn-primary:hover { background: #1557b0; }
+        .btn-secondary { background: #fff; color: #1a73e8; border: 2px solid #1a73e8; width: 100%; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e8e8e8; margin-top: 15px; }
+        th { background: #f8f9fb; color: #666; padding: 14px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 14px; border-bottom: 1px solid #f0f0f0; color: #555; font-size: 14px; }
+        pre { background: #f8f9fb; padding: 15px; border-radius: 8px; font-size: 12px; margin-top: 15px; }
+        iframe { width: 100%; height: 150px; margin-top: 10px; background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; }
+        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">Vuln<span>Bank</span></div>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/transfer">💸 Transfer Money</a>
+        <a href="/profile">👤 My Profile</a>
+        <a href="/search" class="active">🔍 Find Users</a>
+        <a href="/support">📞 Support</a>
+        <a href="/admin">⚙️ Settings</a>
+    </div>
+    <div class="main">
+        <div class="header"><h1>Find Users</h1></div>
+        <div class="card">
+            <h3>Search Users</h3>
+            <div class="form-group"><label>Search by Name or Username</label><input type="text" id="searchInput" placeholder="Enter name..."></div>
+            <button onclick="doSearch()" class="btn btn-primary">Search</button>
+            <p style="margin-top:10px;color:#888;font-size:13px;">Results for: <span id="searchQuery"></span></p>
+            <table><thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Name</th></tr></thead><tbody id="searchResults"></tbody></table>
+        </div>
+        <div class="card">
+            <h3>Check Username Availability</h3>
+            <div class="form-group"><label>Username</label><input type="text" id="blindInput" placeholder="Enter username"></div>
+            <button onclick="blindTest()" class="btn btn-secondary">Check</button>
+            <pre id="blindOutput"></pre>
+        </div>
+        <div class="card">
+            <h3>Error Message Test</h3>
+            <div class="form-group"><label>Test Message</label><input type="text" id="xssInput" value="Test error message"></div>
+            <button onclick="testXSS()" class="btn btn-secondary">Show Result</button>
+            <iframe id="xssFrame"></iframe>
+        </div>
+    </div>
+    <script>
+        async function doSearch() {
+            const q = document.getElementById('searchInput').value;
+            document.getElementById('searchQuery').textContent = q;
+            const r = await fetch('/api/search?q='+encodeURIComponent(q));
+            const users = await r.json();
+            document.getElementById('searchResults').innerHTML = users.map(u => `<tr><td>${u.id}</td><td>${u.username}</td><td>${u.email}</td><td>${u.full_name}</td></tr>`).join('');
+        }
+        async function blindTest() {
+            const r = await fetch('/api/user-exists?username='+encodeURIComponent(document.getElementById('blindInput').value));
+            document.getElementById('blindOutput').textContent = JSON.stringify(await r.json(), null, 2);
+        }
+        function testXSS() {
+            document.getElementById('xssFrame').src = '/api/error?msg='+encodeURIComponent(document.getElementById('xssInput').value);
+        }
+    </script>
+</body>
+</html>

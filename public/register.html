@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnBank - Create Account</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .register-container { background: #fff; border: 1px solid #e8e8e8; border-radius: 16px; padding: 45px; width: 440px; box-shadow: 0 5px 30px rgba(0,0,0,0.06); }
+        .logo { text-align: center; margin-bottom: 10px; }
+        .logo h1 { font-size: 28px; font-weight: 700; color: #1a73e8; }
+        .logo span { color: #34a853; }
+        .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 30px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #444; font-weight: 500; font-size: 13px; }
+        .form-group input { width: 100%; padding: 13px 15px; background: #f8f9fb; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 15px; color: #333; transition: all 0.2s; }
+        .form-group input:focus { outline: none; border-color: #1a73e8; background: #fff; }
+        .btn-register { width: 100%; padding: 14px; background: #1a73e8; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 10px; }
+        .btn-register:hover { background: #1557b0; }
+        .error { background: #fff0f0; border: 1px solid #ffcccc; color: #cc0000; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 13px; }
+        .success { background: #e6ffe6; border: 1px solid #99cc99; color: #006600; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 13px; }
+        .links { text-align: center; margin-top: 25px; }
+        .links a { color: #1a73e8; text-decoration: none; font-size: 14px; }
+        .links a:hover { text-decoration: underline; }
+        .links span { color: #ccc; margin: 0 10px; }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo"><h1>Vuln<span>Bank</span></h1></div>
+        <p class="subtitle">Create your account</p>
+        <div id="error" class="error"></div>
+        <div id="success" class="success"></div>
+        <form id="registerForm">
+            <div class="form-group"><label>Full Name</label><input type="text" id="fullName" placeholder="Enter your full name"></div>
+            <div class="form-group"><label>Username</label><input type="text" id="username" placeholder="Choose a username" autocomplete="off"></div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="email" placeholder="Enter your email"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="password" placeholder="Create a password (min 6 characters)"></div>
+            <div class="form-group"><label>Security Question</label><input type="text" id="secretQuestion" placeholder="e.g., What is your pet name?"></div>
+            <div class="form-group"><label>Security Answer</label><input type="text" id="secretAnswer" placeholder="Answer to your security question"></div>
+            <button type="submit" class="btn-register">Create Account</button>
+        </form>
+        <div class="links">
+            <span>Already have an account?</span><a href="/login">Sign In</a><span>|</span><a href="/">Home</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                full_name: document.getElementById('fullName').value,
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                secret_question: document.getElementById('secretQuestion').value,
+                secret_answer: document.getElementById('secretAnswer').value
+            };
+            
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            
+            if (result.success) {
+                document.getElementById('success').innerHTML = 'Account created! Redirecting...';
+                document.getElementById('success').style.display = 'block';
+                document.getElementById('error').style.display = 'none';
+                setTimeout(() => window.location.href = '/dashboard', 1500);
+            } else {
+                document.getElementById('error').innerHTML = result.message;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('success').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

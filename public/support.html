@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnBank - Support</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #2d3436; }
+        .navbar { background: #fff; border-bottom: 2px solid #e8e8e8; padding: 15px 60px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { font-size: 26px; font-weight: 700; color: #1a73e8; text-decoration: none; }
+        .nav-brand span { color: #34a853; }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: #555; text-decoration: none; font-weight: 500; font-size: 15px; }
+        .nav-links a:hover { color: #1a73e8; }
+        .btn-login { background: #1a73e8; color: #fff !important; padding: 10px 28px; border-radius: 6px; font-weight: 600 !important; text-decoration: none; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        h1 { color: #1a73e8; font-size: 32px; margin-bottom: 10px; }
+        .subtitle { color: #888; margin-bottom: 40px; }
+        .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 30px; margin-bottom: 25px; }
+        .card h3 { color: #1a73e8; font-size: 18px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: 500; font-size: 13px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; background: #f8f9fb; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; color: #333; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #1a73e8; background: #fff; }
+        .btn { padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: #1a73e8; color: #fff; width: 100%; }
+        .btn-primary:hover { background: #1557b0; }
+        .comment { background: #f8f9fb; border-left: 4px solid #1a73e8; padding: 15px; margin-bottom: 12px; border-radius: 0 8px 8px 0; }
+        .comment .uname { color: #1a73e8; font-weight: 600; font-size: 14px; }
+        .comment .text { color: #555; margin-top: 6px; font-size: 14px; }
+        .comment .time { color: #aaa; font-size: 11px; margin-top: 6px; }
+        pre { background: #f8f9fb; padding: 15px; border-radius: 8px; font-size: 12px; margin-top: 15px; overflow-x: auto; }
+        .footer { background: #1a1a2e; color: #888; text-align: center; padding: 30px; font-size: 13px; margin-top: 60px; }
+        .footer a { color: #1a73e8; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">Vuln<span>Bank</span></a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/learn">Learn More</a>
+            <a href="/support">Support</a>
+            <a href="/login" class="btn-login">Sign In</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Help & Support</h1>
+        <p class="subtitle">We're here to help. Browse our resources or contact our team.</p>
+
+        <div class="card">
+            <h3>Community Forum</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:15px;">Ask questions and get help from the community.</p>
+            <div class="form-group"><label>Leave a message</label><textarea id="commentInput" placeholder="Ask a question or leave feedback..."></textarea></div>
+            <button onclick="postComment()" class="btn btn-primary">Post Message</button>
+            <div id="commentsList" style="margin-top:20px;"></div>
+        </div>
+
+        <div class="card">
+            <h3>Password Recovery</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:15px;">Forgot your password? Answer your security question to recover it.</p>
+            <div class="form-group"><label>Username</label><input type="text" id="resetUsername" placeholder="Enter your username"></div>
+            <div class="form-group"><label>Security Answer</label><input type="text" id="resetAnswer" placeholder="Answer to your security question"></div>
+            <button onclick="resetPass()" class="btn btn-primary">Recover Password</button>
+            <div id="resetResult" style="margin-top:12px;font-weight:600;"></div>
+        </div>
+
+        <div class="card">
+            <h3>Network Diagnostics</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:15px;">Test network connectivity to our servers.</p>
+            <div class="form-group"><label>Host Address</label><input type="text" id="pingHost" value="8.8.8.8"></div>
+            <button onclick="doPing()" class="btn btn-primary">Run Test</button>
+            <pre id="pingOutput"></pre>
+        </div>
+
+        <div class="card">
+            <h3>Download Statement</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:15px;">Download your account statement by filename.</p>
+            <div class="form-group"><label>File Name</label><input type="text" id="fileName" value="welcome.txt"></div>
+            <button onclick="readFile()" class="btn btn-primary">Download</button>
+            <pre id="fileContent"></pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 VulnBank. All rights reserved. Member FDIC. <a href="/">Home</a></p>
+    </div>
+    <script>
+        async function loadComments() {
+            const r = await fetch('/api/comments');
+            const comments = await r.json();
+            document.getElementById('commentsList').innerHTML = comments.map(c => `<div class="comment"><div class="uname">${c.username}</div><div class="text">${c.comment}</div><div class="time">${c.timestamp}</div></div>`).join('');
+        }
+        async function postComment() {
+            const comment = document.getElementById('commentInput').value;
+            await fetch('/api/comment', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({comment}) });
+            document.getElementById('commentInput').value = '';
+            loadComments();
+        }
+        async function resetPass() {
+            const r = await fetch('/api/reset-password', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:document.getElementById('resetUsername').value, secret_answer:document.getElementById('resetAnswer').value}) });
+            const d = await r.json();
+            document.getElementById('resetResult').innerHTML = d.success ? 'Password: <strong style="color:#1a73e8;">'+d.password+'</strong>' : d.message;
+        }
+        async function doPing() {
+            const r = await fetch('/api/ping', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({host:document.getElementById('pingHost').value}) });
+            const d = await r.json();
+            document.getElementById('pingOutput').textContent = d.output || 'No output';
+        }
+        async function readFile() {
+            const r = await fetch('/api/file?name='+encodeURIComponent(document.getElementById('fileName').value));
+            document.getElementById('fileContent').textContent = await r.text();
+        }
+        loadComments();
+    </script>
+</body>
+</html>

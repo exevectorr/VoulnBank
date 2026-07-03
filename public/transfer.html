@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnBank - Transfer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #333; min-height: 100vh; display: flex; }
+        .sidebar { width: 240px; background: #fff; border-right: 1px solid #e8e8e8; padding: 25px 0; min-height: 100vh; position: fixed; left: 0; top: 0; }
+        .sidebar-logo { padding: 0 25px 25px; font-size: 22px; font-weight: 700; color: #1a73e8; border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; }
+        .sidebar-logo span { color: #34a853; }
+        .sidebar a { display: block; padding: 12px 25px; color: #555; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+        .sidebar a:hover, .sidebar a.active { color: #1a73e8; background: #e8f0fe; border-right: 3px solid #1a73e8; }
+        .main { margin-left: 240px; flex: 1; padding: 30px 40px; }
+        .header { margin-bottom: 30px; }
+        .header h1 { font-size: 24px; color: #1a73e8; }
+        .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 30px; margin-bottom: 20px; }
+        .card h3 { color: #1a73e8; font-size: 16px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: 500; font-size: 13px; }
+        .form-group input { width: 100%; padding: 12px; background: #f8f9fb; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; color: #333; }
+        .form-group input:focus { outline: none; border-color: #1a73e8; background: #fff; }
+        .btn { padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-primary { background: #1a73e8; color: #fff; width: 100%; }
+        .btn-primary:hover { background: #1557b0; }
+        .btn-secondary { background: #fff; color: #1a73e8; border: 2px solid #1a73e8; }
+        .result { padding: 14px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .result.success { background: #e6ffe6; border: 1px solid #99cc99; color: #006600; display: block; }
+        .result.error { background: #ffe6e6; border: 1px solid #cc9999; color: #cc0000; display: block; }
+        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">Vuln<span>Bank</span></div>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/transfer" class="active">💸 Transfer Money</a>
+        <a href="/profile">👤 My Profile</a>
+        <a href="/search">🔍 Find Users</a>
+        <a href="/support">📞 Support</a>
+        <a href="/admin">⚙️ Settings</a>
+    </div>
+    <div class="main">
+        <div class="header"><h1>Transfer Money</h1></div>
+        <div class="card">
+            <h3>Send to Another Account</h3>
+            <div id="result" class="result"></div>
+            <form id="transferForm">
+                <div class="form-group"><label>Recipient Username</label><input type="text" id="toUser" placeholder="Enter username"></div>
+                <div class="form-group"><label>Amount ($)</label><input type="number" id="amount" placeholder="0.00" step="0.01"></div>
+                <div class="form-group"><label>Description</label><input type="text" id="description" placeholder="Optional note"></div>
+                <button type="submit" class="btn btn-primary">Send Transfer</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3>Quick Transfer</h3>
+            <p style="color:#888;margin-bottom:15px;font-size:14px;">Send multiple rapid transfers</p>
+            <div class="form-group"><label>Recipient</label><input type="text" id="raceTarget" placeholder="Username"></div>
+            <div class="form-group"><label>Amount each</label><input type="number" id="raceAmount" placeholder="100" step="0.01"></div>
+            <button onclick="raceAttack()" class="btn btn-secondary">Send Multiple (5x)</button>
+            <pre id="raceOutput" style="margin-top:15px;background:#f8f9fb;padding:15px;border-radius:8px;font-size:12px;overflow-x:auto;"></pre>
+        </div>
+    </div>
+    <script>
+        document.getElementById('transferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { toUser: document.getElementById('toUser').value, amount: document.getElementById('amount').value, description: document.getElementById('description').value };
+            const res = await fetch('/api/transfer', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            const r = await res.json();
+            const d = document.getElementById('result');
+            d.innerHTML = r.message; d.className = 'result ' + (r.success?'success':'error');
+            if(r.success) setTimeout(()=>location.reload(), 1500);
+        });
+        async function raceAttack() {
+            const amount = document.getElementById('raceAmount').value || 100;
+            const target = document.getElementById('raceTarget').value || 'attacker';
+            const promises = [];
+            for(let i=0;i<5;i++) promises.push(fetch('/api/quick-transfer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({toUser:target,amount})}));
+            const results = await Promise.all(promises);
+            const data = await Promise.all(results.map(r=>r.json()));
+            document.getElementById('raceOutput').textContent = JSON.stringify(data,null,2);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnBank - Settings</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #333; min-height: 100vh; display: flex; }
+        .sidebar { width: 240px; background: #fff; border-right: 1px solid #e8e8e8; padding: 25px 0; min-height: 100vh; position: fixed; left: 0; top: 0; }
+        .sidebar-logo { padding: 0 25px 25px; font-size: 22px; font-weight: 700; color: #1a73e8; border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; }
+        .sidebar-logo span { color: #34a853; }
+        .sidebar a { display: block; padding: 12px 25px; color: #555; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+        .sidebar a:hover, .sidebar a.active { color: #1a73e8; background: #e8f0fe; border-right: 3px solid #1a73e8; }
+        .main { margin-left: 240px; flex: 1; padding: 30px 40px; }
+        .header { margin-bottom: 30px; }
+        .header h1 { font-size: 24px; color: #1a73e8; }
+        .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 30px; margin-bottom: 20px; }
+        .card h3 { color: #1a73e8; font-size: 16px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: 500; font-size: 13px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; background: #f8f9fb; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; color: #333; }
+        .form-group textarea { min-height: 100px; font-family: 'Courier New', monospace; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #1a73e8; background: #fff; }
+        .btn { padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: #1a73e8; color: #fff; width: 100%; }
+        .btn-primary:hover { background: #1557b0; }
+        .btn-secondary { background: #fff; color: #1a73e8; border: 2px solid #1a73e8; }
+        .btn-danger { background: #fff; color: #cc0000; border: 2px solid #cc0000; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e8e8e8; margin-top: 15px; }
+        th { background: #f8f9fb; color: #666; padding: 14px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 14px; border-bottom: 1px solid #f0f0f0; color: #555; font-size: 14px; }
+        pre { background: #f8f9fb; padding: 15px; border-radius: 8px; font-size: 12px; margin-top: 15px; overflow-x: auto; max-height: 300px; }
+        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">Vuln<span>Bank</span></div>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/transfer">💸 Transfer Money</a>
+        <a href="/profile">👤 My Profile</a>
+        <a href="/search">🔍 Find Users</a>
+        <a href="/support">📞 Support</a>
+        <a href="/admin" class="active">⚙️ Settings</a>
+    </div>
+    <div class="main">
+        <div class="header"><h1>Account Settings</h1></div>
+        <div class="card">
+            <h3>Registered Users</h3>
+            <button onclick="loadUsers()" class="btn btn-secondary">Load Users</button>
+            <table><thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Name</th><th>Balance</th><th>Role</th></tr></thead><tbody id="usersBody"></tbody></table>
+        </div>
+        <div class="card">
+            <h3>Database Query</h3>
+            <div class="form-group"><label>SQL Query</label><textarea id="adminSql">SELECT * FROM users</textarea></div>
+            <button onclick="execQuery()" class="btn btn-primary">Execute</button>
+            <pre id="adminOutput"></pre>
+        </div>
+        <div class="card">
+            <h3>View User Details</h3>
+            <div class="form-group"><label>User ID</label><input type="number" id="viewUserId" placeholder="1"></div>
+            <button onclick="viewUser()" class="btn btn-secondary">View User</button>
+            <pre id="userView"></pre>
+        </div>
+        <div class="card">
+            <h3>Switch Account</h3>
+            <div class="form-group"><label>User ID</label><input type="number" id="sessionUserId" placeholder="1"></div>
+            <button onclick="hijackSession()" class="btn btn-danger">Switch to This Account</button>
+        </div>
+    </div>
+    <script>
+        async function loadUsers() { const r=await fetch('/api/admin/users'); const u=await r.json(); document.getElementById('usersBody').innerHTML=u.map(u=>`<tr><td>${u.id}</td><td>${u.username}</td><td>${u.email}</td><td>${u.full_name}</td><td>$${parseFloat(u.balance).toLocaleString()}</td><td>${u.role}</td></tr>`).join(''); }
+        async function execQuery() { const r=await fetch('/api/admin/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:document.getElementById('adminSql').value})}); const d=await r.json(); document.getElementById('adminOutput').textContent=JSON.stringify(d,null,2); }
+        async function viewUser() { const r=await fetch('/api/user/'+document.getElementById('viewUserId').value); document.getElementById('userView').textContent=JSON.stringify(await r.json(),null,2); }
+        async function hijackSession() { await fetch('/api/set-session?id='+document.getElementById('sessionUserId').value); location.reload(); }
+    </script>
+</body>
+</html>

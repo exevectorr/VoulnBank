@@ -1,0 +1,3 @@
+Welcome to VulnBank. We can see tht you have found this page. Get ready to start your hacking journey!
+This is an fake bank made to be penetrated. Here you can try exploits and more stuff to try to ahck the bank!
+It's completly legal and you get full premission to hack THIS specific bank, have fun ;)
